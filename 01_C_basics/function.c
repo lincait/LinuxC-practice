@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 char pillar1 = 'A';
 char pillar2 = 'B';
@@ -12,6 +13,11 @@ void hanoi(int n, char from, char to, char aux);
 void filter_string(char *str, int (*predicate)(int));
 int is_digit(int c);
 int is_alpha(int c);
+int calculate(const char *expr);
+int add(int a, int b);
+int sub(int a, int b);
+int mul(int a, int b);
+int divm(int a, int b);   
 
 int main(void)
 {
@@ -19,12 +25,99 @@ int main(void)
     // hanoi(3, 'A', 'C', 'B');
 
     //函数指针实现的字符串过滤器
-    char str[] = "ahsbf123";
-    printf("%s\n",str);
-    filter_string(str,is_alpha);
-    printf("%s\n",str);
+    // char str1[] = "a1b2c3d4e5f6g7";
+    // printf("%s\n",str1);
+    // filter_string(str1,is_digit);
+    // printf("%s\n",str1);
+    // char str2[] = "a1b2c3d4e5f6g7";
+    // filter_string(str2,is_alpha);
+    // printf("%s\n",str2);
+
+    //用函数指针表驱动整型计算器（四则运算）
+    char str[] = "46 + 23";
+    printf("%d\n",calculate(str));
+
 
     return 0;
+}
+
+/*
+用函数指针表驱动计算器（四则运算）
+设计一个计算器，接收字符串输入，格式为 "a op b"（例如 "3 + 5"），支持操作：+、-、*、/。编写函数：
+int calculate(const char *expr);
+解析字符串并计算整数结果（舍去除法小数部分，向零方向）。
+*/
+int calculate(const char *expr)
+{
+    //函数指针数组，每个元素都指向一个函数
+    int (*op_func[4])(int,int) = {add, sub, mul, divm};
+    char op_char[4] = {'+','-','*','/'};
+    char ch_num1[32];
+    char ch_num2[32];
+    int num1=0,num2=0,res=0;
+    int i = 0;
+
+    //获取两个数据
+    while (expr[i] != ' ')
+    {
+        ch_num1[i] = expr[i];
+        i++;
+    }
+    i += 3;
+    int m = 0;
+    while (expr[i] != '\0')
+    {
+        ch_num2[m] = expr[i];
+        m ++;
+        i++;
+    }
+    //计算两个数据
+    i = strlen(ch_num1);
+    int n = i;
+    while (i)
+    {
+        num1 += (ch_num1[n - i] - '0')*pow(10,i-1);
+        i--;
+    }
+    i = strlen(ch_num2);
+    n = i;
+    while (i)
+    {
+        num2 += (ch_num2[n - i] - '0')*pow(10,i-1);
+        i--;
+    }
+
+    //判断操作符，执行计算
+    for (int k = 0; expr[k] != '\0'; k++)
+    {
+        if(expr[k] == ' ')
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                if(expr[k+1] == op_char[j])
+                {
+                    res = op_func[j](num1,num2);
+                }
+            }
+            
+        }
+    }
+    
+    return res;
+    
+}
+int add(int a, int b)   { return a + b;}
+int sub(int a, int b)   { return a - b;}
+int mul(int a, int b)   { return a * b;}
+int divm(int a, int b)
+{
+    if(b == 0) 
+    {
+        printf("除数为0!\n");
+        return -1;
+    }
+    else
+        return a / b;
 }
 
 /*
@@ -37,30 +130,25 @@ int is_alpha(int c)：判断字符是否为英文字母
 */
 void filter_string(char *str, int (*predicate)(int))
 {
-    int flag = 0;
+    char *read;     //遍历每个字符
+    char *write;    //保存需要保留的字符
+
+    write = read = str;     //三个指针指向同一块内存，改一个其他一起改
 
     if(str == NULL || predicate == NULL) return ;
 
-    int str_n = strlen(str);    //不会计算尾0,后续遍历时要多加一位
-    
-    for (int i = 0; i <= str_n; i++)
+    while(*read)  //'\0'对应asc码为0
     {
-        if(predicate(str[i]) == 0)  //函数返回值为0，需要过滤
+        //返回值为1，需要保留
+        if(predicate(*read))   
         {
-            flag = 1;   //进行了删除操作
-            for (int j = i; j <= str_n; j++)
-            {
-                str[j] = str[j+1];
-            }
-            str_n --;
+            *write++ = *read;
         }
-        if(flag)    //进行了删除操作
-        {
-            flag = 0;
-            i--;    //需要退回一位，避免遗漏
-        }  
+        read++;
     }
+    *write = '\0';
 }
+
 int is_digit(int c) //判断字符是否为数字,是返回1
 {
     return (c >= '0' && c <= '9');
