@@ -70,12 +70,12 @@ int calculate(const char *expr)
         num1 = num1 * 10 + (ch_num1[j] - '0');
     }
 
-    i += 3;
+    i += 3;     //定位到第二个数
     while (expr[i] != '\0')
     {
         ch_num2[m] = expr[i];
         m ++;
-        i++;
+        i ++;
     }
     ch_num2[i] = '\0';
     for (int j = 0; ch_num2[j] != '\0'; j++)
