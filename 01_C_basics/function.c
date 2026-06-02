@@ -34,7 +34,7 @@ int main(void)
     // printf("%s\n",str2);
 
     //用函数指针表驱动整型计算器（四则运算）
-    char str[] = "46 + 23";
+    char str[] = "46 * 23";
     printf("%d\n",calculate(str));
 
 
@@ -52,10 +52,10 @@ int calculate(const char *expr)
     //函数指针数组，每个元素都指向一个函数
     int (*op_func[4])(int,int) = {add, sub, mul, divm};
     char op_char[4] = {'+','-','*','/'};
-    char ch_num1[32];
-    char ch_num2[32];
+    char ch_num1[32],ch_num2[32];
     int num1=0,num2=0,res=0;
-    int i = 0;
+    int i = 0, m = 0;
+    int op_idx = 0;
 
     //获取两个数据
     while (expr[i] != ' ')
@@ -63,43 +63,32 @@ int calculate(const char *expr)
         ch_num1[i] = expr[i];
         i++;
     }
+    op_idx = i+1;     //记录操作符的位置
+    ch_num1[i] = '\0';     //建立一个字符串后一定要补\0
+    for (int j = 0; ch_num1[j] != '\0'; j++)    //将字符串转为数
+    {
+        num1 = num1 * 10 + (ch_num1[j] - '0');
+    }
+
     i += 3;
-    int m = 0;
     while (expr[i] != '\0')
     {
         ch_num2[m] = expr[i];
         m ++;
         i++;
     }
-    //计算两个数据
-    i = strlen(ch_num1);
-    int n = i;
-    while (i)
+    ch_num2[i] = '\0';
+    for (int j = 0; ch_num2[j] != '\0'; j++)
     {
-        num1 += (ch_num1[n - i] - '0')*pow(10,i-1);
-        i--;
-    }
-    i = strlen(ch_num2);
-    n = i;
-    while (i)
-    {
-        num2 += (ch_num2[n - i] - '0')*pow(10,i-1);
-        i--;
+        num2 = num2 * 10 + (ch_num2[j] - '0');
     }
 
     //判断操作符，执行计算
-    for (int k = 0; expr[k] != '\0'; k++)
+    for (int j = 0; j < 4; j++)
     {
-        if(expr[k] == ' ')
+        if(expr[op_idx] == op_char[j])
         {
-            for (int j = 0; j < 4; j++)
-            {
-                if(expr[k+1] == op_char[j])
-                {
-                    res = op_func[j](num1,num2);
-                }
-            }
-            
+            res = op_func[j](num1,num2);
         }
     }
     
