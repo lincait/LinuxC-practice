@@ -3,12 +3,6 @@
 #include <string.h>
 #include <math.h>
 
-char pillar1 = 'A';
-char pillar2 = 'B';
-char pillar3 = 'C';
-char tmp;
-
-
 void hanoi(int n, char from, char to, char aux);
 void filter_string(char *str, int (*predicate)(int));
 int is_digit(int c);
@@ -22,7 +16,7 @@ int divm(int a, int b);
 int main(void)
 {
     //汉诺塔
-    // hanoi(3, 'A', 'C', 'B');
+    hanoi(3, 'A', 'C', 'B');
 
     //函数指针实现的字符串过滤器
     // char str1[] = "a1b2c3d4e5f6g7";
@@ -34,8 +28,8 @@ int main(void)
     // printf("%s\n",str2);
 
     //用函数指针表驱动整型计算器（四则运算）
-    char str[] = "46 * 23";
-    printf("%d\n",calculate(str));
+    // char str[] = "46 * 23";
+    // printf("%d\n",calculate(str));
 
 
     return 0;
