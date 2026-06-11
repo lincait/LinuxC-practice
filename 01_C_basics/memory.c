@@ -28,24 +28,31 @@ typedef struct
 void vector_init(Vector *v);                
 void vector_push(Vector *v, int value);     
 void vector_insert(Vector *v, size_t index, int value); 
-void vector_remove(Vector *v, size_t index); // 删除指定位置的元素，后续元素前移
-int  vector_get(const Vector *v, size_t index); // 返回元素值，索引越界时打印错误并返回0
-void vector_free(Vector *v);                // 释放 data 指向的内存，并将 size 和 capacity 置零
-size_t vector_size(const Vector *v);        // 返回元素个数
+void vector_remove(Vector *v, size_t index); 
+int  vector_get(const Vector *v, size_t index); 
+void vector_free(Vector *v);                
+size_t vector_size(const Vector *v);       
 void vector_printf(const Vector *v);
-
 
 int main()
 {
     Vector d_arr;
     
     vector_init(&d_arr);
-    vector_push(&d_arr,33);
-    vector_push(&d_arr,139);
+    vector_push(&d_arr,71);
+    vector_push(&d_arr,80);
+    vector_push(&d_arr,10);
+    vector_push(&d_arr,20);
+    vector_printf(&d_arr);
+    printf("%d\n",vector_get(&d_arr,1));
+    printf("%zu\n",vector_size(&d_arr));
+
+    vector_insert(&d_arr,0,6);
+    vector_printf(&d_arr);
+    vector_remove(&d_arr,2);
     vector_printf(&d_arr);
 
-    free(d_arr.data);
-    d_arr.data = NULL;
+    vector_free(&d_arr);
 
 
 	return 0;
@@ -60,8 +67,9 @@ void vector_init(Vector *v)
 
     if(v->data == NULL)
     {
-        printf("申请内存失败\n");
-        v->size = 0;
+        printf("申请内存失败！\n");
+        v->capacity = 0;
+        exit(0);
     }
 }
 // 尾部添加元素，容量不足时扩容为 2 倍
@@ -73,55 +81,105 @@ void vector_push(Vector *v, int value)
     if(remain < 1) //容量不足，扩容
     {
         tmp = realloc(v->data,sizeof(int) * (v->capacity)*2);
-        v->data = tmp;
-        v->capacity *= 2;
+        if(tmp == NULL)
+        {
+            printf("申请内存失败！\n");
+            exit(0);
+        }
+        else
+        {
+            v->data = tmp;
+            v->capacity *= 2;
+        }
     }
-    else
-    {
-        v->data[v->size] = value;
-        v->size ++;
-    }
+
+    v->data[v->size] = value;
+    v->size ++;
         
 }
 // 在指定位置插入，后续元素后移
 void vector_insert(Vector *v, size_t index, int value)
 {
+    int *tmp = NULL;
     size_t remain = v->capacity - v->size;  //剩余容量
-    if(remain < 1) //容量不足
+
+    if(index >= v->size) //越界
     {
-        printf("容量不足，越界！\n");
+        printf("索引越界！\n");
         return ;
     }
 
-    for (int i = v->size-index; i >= index; i--)  //后移
+    if(remain < 1) //容量不足，扩容
     {
-        v->data[i+1] = v->data[i];
+        tmp = realloc(v->data,sizeof(int) * (v->capacity)*2);
+        if(tmp == NULL)
+        {
+            printf("申请内存失败！\n");
+            exit(0);
+        }
+        else
+        {
+            v->data = tmp;
+            v->capacity *= 2;
+        }
+    }
+
+    for (size_t i = v->size; i >= index+1; i--)  //后移
+    {
+        v->data[i] = v->data[i-1];
     }
 
     v->data[index] = value;
     v->size ++;
     
 }
+// 删除指定位置的元素，后续元素前移
 void vector_remove(Vector *v, size_t index)
 {
+    if(index >= v->size) //越界
+    {
+        printf("索引越界！\n");
+        return ;
+    }
 
+    for (size_t i = index+1; i < v->size; i++)  //前移
+    {
+        v->data[i-1] = v->data[i];
+    }
+
+    v->size --;
 }
+// 返回元素值，索引越界时打印错误并返回0
 int  vector_get(const Vector *v, size_t index)
 {
-
+    if(index >= v->size) //越界
+    {
+        printf("索引越界！\n");
+        return 0;
+    }
+    else
+    {
+        return v->data[index];
+    }
 }
+// 释放 data 指向的内存，并将 size 和 capacity 置零
 void vector_free(Vector *v)
 {
+    free(v->data);
+    v->data = NULL;
 
+    v->capacity = 0;
+    v->size = 0;
 }
+ // 返回元素个数
 size_t vector_size(const Vector *v)
 {
-
+    return v->size;
 }
 //打印数组元素和信息
 void vector_printf(const Vector *v)
 {
-    for (int i = 0; i < v->size; i++)
+    for (size_t i = 0; i < v->size; i++)
     {
         printf("%d\t",v->data[i]);
     }
