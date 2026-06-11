@@ -2,8 +2,8 @@
 
 ## 关于本仓库
 
-本仓库是学习 Linux C 编程过程中的所有练习代码。
-所有程序均在 Ubuntu 环境下编译通过，持续更新中。
+本仓库是学习 C语言、数据结构和Linux C 编程过程中的所有练习代码。
+所有程序均在 Ubuntu 环境下编译通过。
 
 ## 目录结构
 
@@ -12,7 +12,12 @@
     - `ctrl_test.c` - 流程控制练习
     - `array.c` - 数组练习
     - `pointer.c` - 指针练习
-    - `Makefile` - 编译脚本
+    - `function.c` - 函数练习
+    - `struct_sty.c` - 构造类型练习
+    - `memory.c` - 动态内存管理练习
+    - `Makefile` 
+- `02_Data_Structure` -数据结构练习
+
 
 ## 环境说明
 
