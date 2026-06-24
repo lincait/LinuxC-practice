@@ -7,7 +7,7 @@ typedef struct Student
 {
     char id[MAXSIZE];
     char name[MAXSIZE];
-    int score;
+    float score;
 }Student;
 
 // 双向链表
@@ -19,9 +19,14 @@ typedef struct DLlist
 }DNode;
 
 int DLlist_Init(DNode **head);
-void DLlist_Add(DNode *head, Student *stu);
-void DLlist_Delete(DNode *head, char *id);
+int DLlist_Add(DNode *head, Student *stu);
+DNode *DLlist_Find(DNode *head, char *id);
+int DLlist_Delete(DNode *head, char *id);
+int DLlist_ChanegScore(DNode *head, char *id, float score);
 void DLlist_Output(DNode *head);
+void DLlist_OPOutput(DNode *head);
+void DLlist_OutStatistics(DNode *head);
+void DLlist_Destroy(DNode *head);
 
 
 #endif

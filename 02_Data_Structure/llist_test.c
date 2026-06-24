@@ -34,7 +34,15 @@ int main()
     {
         DLlist_Add(head, &stu[i]); 
     }
-    
     DLlist_Output(head);
+    DLlist_OPOutput(head);
+
+    DLlist_Delete(head, "1001");
+    DLlist_ChanegScore(head, "1005", 68);
+    DLlist_Output(head);
+
+    DLlist_OutStatistics(head);
+    DLlist_Destroy(head);
+
     
 }
