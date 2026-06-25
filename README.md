@@ -7,17 +7,19 @@
 
 ## 目录结构
 
-- `01_C_basics/` - C语言基础练习
-    - `io_test.c` - 输入输出练习
-    - `ctrl_test.c` - 流程控制练习
-    - `array.c` - 数组练习
-    - `pointer.c` - 指针练习
-    - `function.c` - 函数练习
-    - `struct_sty.c` - 构造类型练习
-    - `memory.c` - 动态内存管理练习
+- `01_C_basics/`        - C语言基础练习
+    - `io_test.c`       - 输入输出
+    - `ctrl_test.c`     - 流程控制
+    - `array.c`         - 数组
+    - `pointer.c`       - 指针
+    - `function.c`      - 函数
+    - `struct_sty.c`    - 构造类型
+    - `memory.c`        - 动态内存管理
     - `Makefile` 
-- `02_Data_Structure` -数据结构练习
-
+- `02_Data_Structure`   - 数据结构练习
+    - `Linked_List/`    - 链表
+    - `Stack/`          - 栈
+    - `Queue/`          - 队列
 
 ## 环境说明
 
