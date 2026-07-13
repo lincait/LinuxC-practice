@@ -32,14 +32,24 @@ int main(int argc, char const *argv[])
 
     // 打开文件
     int src_fd = open(src_path, O_RDONLY);
-    off_t column = Mycopy_BytesCount(src_fd);
-    if(offset>=column || offset<0)  
+    if(src_fd < 0)
+    {
+        perror("open:");
+        exit(EXIT_FAILURE);
+    }
+    off_t column = Mycopy_BytesCount(src_fd);   // 计算源文件大小
+    if( column == -1 )  
+    {
+        perror("lseek:");
+        exit(EXIT_FAILURE);
+    }
+    if(offset>=column || offset<0)      // 用户给的偏移量不合法
     {
         printf("offset not allow\n");
         exit(EXIT_FAILURE);
     }
     int obj_fd = open(obj_path, O_RDWR | O_TRUNC | O_CREAT, 0664);
-    if(src_fd<0 || obj_fd<0)
+    if(obj_fd < 0)
     {
         perror("open:");
         exit(EXIT_FAILURE);
@@ -48,11 +58,25 @@ int main(int argc, char const *argv[])
     // 复制文件
     int res = Mycopy_Cpfile(src_fd, obj_fd, offset);
     if(res < 0)
+    {
+        perror("copy:");
         exit(EXIT_FAILURE);
+    }
 
-    Mycopy_Travel(obj_path);
+    res = Mycopy_Travel(obj_path);
+    if(res == -1)   
+    {
+        perror("travel:");
+        exit(EXIT_FAILURE);
+    }
+
     printf("objfile column:%ld\n", Mycopy_BytesCount(obj_fd));
-    Mycopy_Static(obj_path);
+    res = Mycopy_Statis(obj_path);
+    if(res == -1)
+    {
+        perror("stat:");
+        exit(EXIT_FAILURE);
+    }
 
     close(src_fd);
     close(obj_fd);
