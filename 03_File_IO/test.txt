@@ -1,0 +1,10 @@
+To address the limited accuracy of micro-Doppler feature
+extraction in UAV rotor target detection, this paper investigates 
+and validates an advanced extraction algorithm. Initially, the 
+micro-Doppler effect of UAV rotors is analyzed through signal 
+modeling, and the theoretical foundations of the STFT and FSST 
+are systematically elaborated. Focusing on the challenges of 
+path-crossing errors and zero-frequency interference prevalent 
+in traditional ridge extraction algorithms when processing multi-component 
+signals, this study proposes an improved algorithm based on a hybrid cost function and
+a dwell penalty mechanism.
