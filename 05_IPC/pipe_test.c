@@ -17,6 +17,11 @@ int main()
 {
     int pipefd[2];
     int res = pipe(pipefd);     // 父进程创建管道
+    if(res == -1)
+    {
+        perror("pipe");
+        exit(EXIT_FAILURE);
+    }
     char data[20] = {"hello, pipe!"};
     pid_t pid = fork(); 
 

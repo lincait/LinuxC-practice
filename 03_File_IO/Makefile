@@ -15,4 +15,4 @@ $(Target): $(OBJS)
 -include $(DEPS)
 
 clean:
-	rm -f *.o *.d $(Target)
+	rm -f *.o *.d *.txt $(Target)
