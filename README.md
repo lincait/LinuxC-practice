@@ -15,11 +15,25 @@
     - `function.c`      - 函数
     - `struct_sty.c`    - 构造类型
     - `memory.c`        - 动态内存管理
-    - `Makefile` 
+    - `Makefile`
 - `02_Data_Structure`   - 数据结构练习
-    - `Linked_List/`    - 链表
-    - `Stack/`          - 栈
-    - `Queue/`          - 队列
+    - `Linked_List/`    - 链表（单链表、双向链表）
+    - `Stack/`          - 栈（网站浏览记录）
+    - `Queue/`          - 队列（医院排队叫号）
+    - `Tree/`           - 二叉搜索树（图书信息管理）
+- `03_File_IO`          - 文件I/O练习
+    - `mycopy.c/h`      - 文件复制工具（支持偏移量复制）
+    - `main.c`          - mycopy 主程序
+- `04_Process_Handle`   - 进程处理练习
+    - `process_hde.c/h` - 子进程创建、回收与状态管理
+    - `main.c`          - 多进程管理演示
+- `05_IPC`              - 进程间通信练习
+    - `pipe_test.c`     - 无名管道（子进程转大写）
+    - `msg_send.c`      - POSIX 消息队列（发送端）
+    - `msg_recv.c`      - POSIX 消息队列（接收端）
+    - `shm_test.c`      - 共享内存（父子进程统计文件）
+    - `input.txt`       - 测试数据
+    - `Makefile`
 
 ## 环境说明
 
