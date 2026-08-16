@@ -1,1 +1,5 @@
 build/
+.vscode/
+*.o
+*.d
+Thread_lab
