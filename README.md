@@ -50,6 +50,9 @@
     - `msg_recv.c`         - POSIX 消息队列接收
     - `shm_test.c`         - POSIX 共享内存
     - `input.txt`          - 测试文件
+- `06_Thread`              - 线程练习
+    - `main.c`             - 综合练习题目（大注释）与主流程
+    - `thread.c/h`         - 生产者线程 + 信号量 + 线程池（并行素数统计）
     - `Makefile`
 
 ## 环境说明
