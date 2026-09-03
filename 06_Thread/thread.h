@@ -1,6 +1,7 @@
 #ifndef THREAD_H__
 #define THREAD_H__
 
+// glib需要添加路径
 #include <glib.h>
 #include <pthread.h>
 #include <semaphore.h>

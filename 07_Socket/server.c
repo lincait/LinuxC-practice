@@ -62,33 +62,40 @@ typedef struct
     struct sockaddr_in client_addr;
 }client_info_t;
 
+// 线程内部不要直接exit，因为作为服务器要保证一个客户端出问题还能继续运行
 void *Deal_Client(void *data)
 {
     client_info_t client_info = *(client_info_t *)data;     // 存下客户端信息
     free(data);     // 获取到客户端信息了，释放内存
-    char *buf = malloc(sizeof(char) * 1024);
-    if(buf == NULL) 
-    {
-        perror("malloc");
-        exit(EXIT_FAILURE);
-    }
+
+    char buf[1024];
     ssize_t read_bytes, write_bytes;
 
     // recv返回0时退出循环
-    while(read_bytes = recv(client_info.client_fd, buf, 1024, 0))
+    while((read_bytes = recv(client_info.client_fd, buf, sizeof(buf) - 1, 0)) > 0)    
     {
-        CHECK(read_bytes, "recv");
-        printf("收到 %s:%d 的消息: %s\n", inet_ntoa(client_info.client_addr.sin_addr), ntohs(client_info.client_addr.sin_port), buf);
+        buf[read_bytes] = '\0';     // recv返回的是一段字节，并不保证字符串后面是'\0'，影响printf
+        printf("收到 %s:%d 的消息: %s", inet_ntoa(client_info.client_addr.sin_addr), ntohs(client_info.client_addr.sin_port), buf);
 
         // 将接收到的数据发回去
         write_bytes = send(client_info.client_fd, buf, read_bytes, 0);  
-        CHECK(write_bytes, "send");
+        if(write_bytes == -1)   // 出错不要exit，直接跳出断开客户端即可
+        {
+            perror("send");
+            break;
+        }
+    }
+
+    if(read_bytes == -1)    // 出错不要exit，直接跳出断开客户端即可
+    {
+        perror("recv");
     }
 
     // 客户端断开
     printf("客户端%s:%d 已断开\n", inet_ntoa(client_info.client_addr.sin_addr), ntohs(client_info.client_addr.sin_port));
-    free(buf);
     close(client_info.client_fd);
+
+    return NULL;
 }
 
 int main(int argc,char *argv[])
@@ -99,21 +106,22 @@ int main(int argc,char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    // 服务端和客户端地址
+    // 服务端地址
     struct sockaddr_in server_addr;
-    client_info_t *client_info = malloc(sizeof(client_info_t));    // 该结构体要传给线程，所以放在堆上
     char *localhost = "127.0.0.1";      // 本地地址
     int res = 0;                        // 临时存储函数返回值
-    socklen_t client_len = sizeof(client_info->client_addr); // 存储客户端地址大小
-
+    
     memset(&server_addr, 0, sizeof(server_addr));
-    memset(&(client_info->client_addr), 0, sizeof(client_info->client_addr));
 
     // 获取服务端地址和端口号
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(atoi(argv[1]));
     res = inet_pton(AF_INET, localhost, &server_addr.sin_addr);
-    CHECK(res, "inet_pton");
+    if (res != 1)
+    {
+        fprintf(stderr, "服务器IP地址格式错误\n");
+        exit(EXIT_FAILURE);
+    }
 
     int listen_fd = socket(AF_INET, SOCK_STREAM, 0);    // 创建套接字
     CHECK(listen_fd, "socket");
@@ -126,16 +134,29 @@ int main(int argc,char *argv[])
 
     while(1)
     {
+        // 客户端地址，每次连接都不一样，要在每次循环都建立一个
+        client_info_t *client_info = malloc(sizeof(client_info_t));    // 该结构体要传给线程，所以放在堆上
+        if(client_info == NULL)
+        {
+            perror("malloc");
+            exit(EXIT_FAILURE);
+        }
+        socklen_t client_len = sizeof(client_info->client_addr); // 存储客户端地址大小
+        memset(&(client_info->client_addr), 0, sizeof(client_info->client_addr));
+
         client_info->client_fd = accept(listen_fd, (struct sockaddr *)&(client_info->client_addr), &client_len);    // 等待接收连接
         CHECK(client_info->client_fd, "accept");
         printf("客户端%s:%d 已连接\n", inet_ntoa(client_info->client_addr.sin_addr), ntohs(client_info->client_addr.sin_port));
 
         // 创建一个线程处理客户端的消息
         pthread_t pid_rw;
-        if(pthread_create(&pid_rw, NULL, Deal_Client, client_info))
+        int err = pthread_create(&pid_rw, NULL, Deal_Client, client_info);
+        if (err != 0)
         {
-            perror("pthread_create");
-            exit(EXIT_FAILURE);
+            fprintf(stderr, "pthread_create: %s\n", strerror(err));
+            close(client_info->client_fd);
+            free(client_info);
+            continue;
         }
 
         pthread_detach(pid_rw);
